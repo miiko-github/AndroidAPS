@@ -1,4 +1,4 @@
-package info.nightscout.androidaps.plugins.DanaRKorean.History;
+package info.nightscout.androidaps.plugins.DanaRAPS.History;
 
 import android.app.Activity;
 import android.content.ComponentName;
@@ -43,7 +43,7 @@ import info.nightscout.androidaps.plugins.ConfigBuilder.ConfigBuilderPlugin;
 import info.nightscout.androidaps.plugins.DanaR.History.DanaRNSHistorySync;
 import info.nightscout.androidaps.plugins.DanaR.comm.RecordTypes;
 import info.nightscout.androidaps.plugins.DanaR.events.EventDanaRSyncStatus;
-import info.nightscout.androidaps.plugins.DanaRKorean.services.DanaRKoreanExecutionService;
+import info.nightscout.androidaps.plugins.DanaRAPS.services.DanaRAPSExecutionService;
 import info.nightscout.androidaps.plugins.NSClientInternal.data.NSProfile;
 import info.nightscout.utils.DateUtil;
 import info.nightscout.utils.DecimalFormatter;
@@ -53,7 +53,7 @@ public class DanaRHistoryActivity extends Activity {
     private static Logger log = LoggerFactory.getLogger(DanaRHistoryActivity.class);
 
     private boolean mBounded;
-    private static DanaRKoreanExecutionService mExecutionService;
+    private static DanaRAPSExecutionService mExecutionService;
 
     private Handler mHandler;
     private static HandlerThread mHandlerThread;
@@ -96,7 +96,7 @@ public class DanaRHistoryActivity extends Activity {
     @Override
     public void onStart() {
         super.onStart();
-        Intent intent = new Intent(this, DanaRKoreanExecutionService.class);
+        Intent intent = new Intent(this, DanaRAPSExecutionService.class);
         bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
     }
 
@@ -132,7 +132,7 @@ public class DanaRHistoryActivity extends Activity {
         public void onServiceConnected(ComponentName name, IBinder service) {
             log.debug("Service is connected");
             mBounded = true;
-            DanaRKoreanExecutionService.LocalBinder mLocalBinder = (DanaRKoreanExecutionService.LocalBinder) service;
+            DanaRAPSExecutionService.LocalBinder mLocalBinder = (DanaRAPSExecutionService.LocalBinder) service;
             mExecutionService = mLocalBinder.getServiceInstance();
         }
     };

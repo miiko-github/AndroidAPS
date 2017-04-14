@@ -30,11 +30,12 @@ public class MsgStatusTempBasal extends MessageBase {
         int tempBasalRemainingMin = (tempBasalTotalSec - tempBasalRunningSeconds) / 60;
         Date tempBasalStart = isTempBasalInProgress ? getDateFromTempBasalSecAgo(tempBasalRunningSeconds) : new Date(0);
 
-        DanaRPlugin.getDanaRPump().isTempBasalInProgress = isTempBasalInProgress;
-        DanaRPlugin.getDanaRPump().tempBasalPercent = tempBasalPercent;
-        DanaRPlugin.getDanaRPump().tempBasalRemainingMin = tempBasalRemainingMin;
-        DanaRPlugin.getDanaRPump().tempBasalTotalSec = tempBasalTotalSec;
-        DanaRPlugin.getDanaRPump().tempBasalStart = tempBasalStart;
+        DanaRPump pump = DanaRPump.getInstance();
+        pump.isTempBasalInProgress = isTempBasalInProgress;
+        pump.tempBasalPercent = tempBasalPercent;
+        pump.tempBasalRemainingMin = tempBasalRemainingMin;
+        pump.tempBasalTotalSec = tempBasalTotalSec;
+        pump.tempBasalStart = tempBasalStart;
 
         updateTempBasalInDB();
 
@@ -54,7 +55,7 @@ public class MsgStatusTempBasal extends MessageBase {
 
     public static void updateTempBasalInDB() {
         DanaRPlugin DanaRPlugin = (DanaRPlugin) MainApp.getSpecificPlugin(DanaRPlugin.class);
-        DanaRPump danaRPump = DanaRPlugin.getDanaRPump();
+        DanaRPump danaRPump = DanaRPump.getInstance();
         Date now = new Date();
 
         try {

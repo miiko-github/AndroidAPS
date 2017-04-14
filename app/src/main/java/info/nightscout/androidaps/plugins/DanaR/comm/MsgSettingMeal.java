@@ -19,7 +19,7 @@ public class MsgSettingMeal extends MessageBase {
     }
 
     public void handleMessage(byte[] bytes) {
-        DanaRPump pump = DanaRPlugin.getDanaRPump();
+        DanaRPump pump = DanaRPump.getInstance();
         pump.basalStep = intFromBuff(bytes, 0, 1) / 100d;
         pump.bolusStep = intFromBuff(bytes, 1, 1) / 100d;
         boolean bolusEnabled = intFromBuff(bytes, 2, 1) == 1;

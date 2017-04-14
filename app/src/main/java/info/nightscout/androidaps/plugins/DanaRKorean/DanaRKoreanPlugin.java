@@ -35,7 +35,7 @@ import info.nightscout.androidaps.interfaces.ProfileInterface;
 import info.nightscout.androidaps.interfaces.PumpDescription;
 import info.nightscout.androidaps.interfaces.PumpInterface;
 import info.nightscout.androidaps.plugins.ConfigBuilder.ConfigBuilderPlugin;
-import info.nightscout.androidaps.plugins.DanaRKorean.Services.ExecutionService;
+import info.nightscout.androidaps.plugins.DanaRKorean.services.DanaRKoreanExecutionService;
 import info.nightscout.androidaps.plugins.NSProfile.NSProfilePlugin;
 import info.nightscout.androidaps.plugins.Overview.Notification;
 import info.nightscout.androidaps.plugins.Overview.events.EventDismissNotification;
@@ -60,7 +60,7 @@ public class DanaRKoreanPlugin implements PluginBase, PumpInterface, Constraints
     static boolean fragmentProfileEnabled = true;
     static boolean fragmentPumpVisible = true;
 
-    public static ExecutionService sExecutionService;
+    public static DanaRKoreanExecutionService sExecutionService;
 
 
     private static DanaRKoreanPump sDanaRKoreanPump = new DanaRKoreanPump();
@@ -79,7 +79,7 @@ public class DanaRKoreanPlugin implements PluginBase, PumpInterface, Constraints
         useExtendedBoluses = sharedPreferences.getBoolean("danar_useextended", false);
 
         Context context = MainApp.instance().getApplicationContext();
-        Intent intent = new Intent(context, ExecutionService.class);
+        Intent intent = new Intent(context, DanaRKoreanExecutionService.class);
         context.bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
         MainApp.bus().register(this);
 
@@ -119,7 +119,7 @@ public class DanaRKoreanPlugin implements PluginBase, PumpInterface, Constraints
 
         public void onServiceConnected(ComponentName name, IBinder service) {
             log.debug("Service is connected");
-            ExecutionService.LocalBinder mLocalBinder = (ExecutionService.LocalBinder) service;
+            DanaRKoreanExecutionService.LocalBinder mLocalBinder = (DanaRKoreanExecutionService.LocalBinder) service;
             sExecutionService = mLocalBinder.getServiceInstance();
         }
     };
@@ -438,9 +438,7 @@ public class DanaRKoreanPlugin implements PluginBase, PumpInterface, Constraints
             Integer percentRate = Double.valueOf(absoluteRate / getBaseBasalRate() * 100).intValue();
             if (percentRate < 100) percentRate = Round.ceilTo((double) percentRate, 10d).intValue();
             else percentRate = Round.floorTo((double) percentRate, 10d).intValue();
-            if (percentRate > 200) {
-                percentRate = 200;
-            }
+            if (percentRate > getPumpDescription().maxHighTempPercent) percentRate = getPumpDescription().maxHighTempPercent;
             // If extended in progress
             if (isExtendedBoluslInProgress() && useExtendedBoluses) {
                 if (Config.logPumpActions)
@@ -556,7 +554,7 @@ public class DanaRKoreanPlugin implements PluginBase, PumpInterface, Constraints
             log.error("setTempBasalPercent: Invalid input");
             return result;
         }
-        if (percent > 200) percent = 200;
+        if (percent > getPumpDescription().maxHighTempPercent) percent = getPumpDescription().maxHighTempPercent;
         if (getDanaRPump().isTempBasalInProgress && getDanaRPump().tempBasalPercent == percent) {
             result.enacted = false;
             result.success = true;
@@ -801,7 +799,7 @@ public class DanaRKoreanPlugin implements PluginBase, PumpInterface, Constraints
     public Integer applyBasalConstraints(Integer percentRate) {
         Integer origPercentRate = percentRate;
         if (percentRate < 0) percentRate = 0;
-        if (percentRate > 200) percentRate = 200;
+        if (percentRate > getPumpDescription().maxHighTempPercent) percentRate = getPumpDescription().maxHighTempPercent;
         if (!Objects.equals(percentRate, origPercentRate) && Config.logConstraintsChanges && !Objects.equals(origPercentRate, Constants.basalPercentOnlyForCheckLimit))
             log.debug("Limiting percent rate " + origPercentRate + "% to " + percentRate + "%");
         return percentRate;

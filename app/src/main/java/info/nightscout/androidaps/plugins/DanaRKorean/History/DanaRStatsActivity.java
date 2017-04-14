@@ -54,7 +54,7 @@ import info.nightscout.androidaps.plugins.CircadianPercentageProfile.CircadianPe
 import info.nightscout.androidaps.plugins.ConfigBuilder.ConfigBuilderPlugin;
 import info.nightscout.androidaps.plugins.DanaR.comm.RecordTypes;
 import info.nightscout.androidaps.plugins.DanaR.events.EventDanaRSyncStatus;
-import info.nightscout.androidaps.plugins.DanaRKorean.Services.ExecutionService;
+import info.nightscout.androidaps.plugins.DanaRKorean.services.DanaRKoreanExecutionService;
 import info.nightscout.utils.DecimalFormatter;
 import info.nightscout.utils.SafeParse;
 import info.nightscout.utils.ToastUtils;
@@ -63,7 +63,7 @@ public class DanaRStatsActivity extends Activity {
     private static Logger log = LoggerFactory.getLogger(DanaRStatsActivity.class);
 
     private boolean mBounded;
-    private static ExecutionService mExecutionService;
+    private static DanaRKoreanExecutionService mExecutionService;
 
     private Handler mHandler;
     private static HandlerThread mHandlerThread;
@@ -89,7 +89,7 @@ public class DanaRStatsActivity extends Activity {
     @Override
     public void onStart() {
         super.onStart();
-        Intent intent = new Intent(this, ExecutionService.class);
+        Intent intent = new Intent(this, DanaRKoreanExecutionService.class);
         bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
     }
 
@@ -140,7 +140,7 @@ public class DanaRStatsActivity extends Activity {
         public void onServiceConnected(ComponentName name, IBinder service) {
             log.debug("Service is connected");
             mBounded = true;
-            ExecutionService.LocalBinder mLocalBinder = (ExecutionService.LocalBinder) service;
+            DanaRKoreanExecutionService.LocalBinder mLocalBinder = (DanaRKoreanExecutionService.LocalBinder) service;
             mExecutionService = mLocalBinder.getServiceInstance();
         }
     };

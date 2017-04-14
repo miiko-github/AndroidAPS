@@ -35,13 +35,14 @@ public class MsgStatusBolusExtended extends MessageBase {
         Date extendedBolusStart = isExtendedInProgress ? getDateFromSecAgo(extendedBolusSoFarInSecs) : new Date(0);
         int extendedBolusRemainingMinutes = extendedBolusMinutes - extendedBolusSoFarInMinutes;
 
-        DanaRPlugin.getDanaRPump().isExtendedInProgress = isExtendedInProgress;
-        DanaRPlugin.getDanaRPump().extendedBolusMinutes = extendedBolusMinutes;
-        DanaRPlugin.getDanaRPump().extendedBolusAmount = extendedBolusAmount;
-        DanaRPlugin.getDanaRPump().extendedBolusSoFarInMinutes = extendedBolusSoFarInMinutes;
-        DanaRPlugin.getDanaRPump().extendedBolusAbsoluteRate = extendedBolusAbsoluteRate;
-        DanaRPlugin.getDanaRPump().extendedBolusStart = extendedBolusStart;
-        DanaRPlugin.getDanaRPump().extendedBolusRemainingMinutes = extendedBolusRemainingMinutes;
+        DanaRPump pump = DanaRPump.getInstance();
+        pump.isExtendedInProgress = isExtendedInProgress;
+        pump.extendedBolusMinutes = extendedBolusMinutes;
+        pump.extendedBolusAmount = extendedBolusAmount;
+        pump.extendedBolusSoFarInMinutes = extendedBolusSoFarInMinutes;
+        pump.extendedBolusAbsoluteRate = extendedBolusAbsoluteRate;
+        pump.extendedBolusStart = extendedBolusStart;
+        pump.extendedBolusRemainingMinutes = extendedBolusRemainingMinutes;
 
         updateExtendedBolusInDB();
 
@@ -63,24 +64,24 @@ public class MsgStatusBolusExtended extends MessageBase {
 
     public static void updateExtendedBolusInDB() {
         DanaRPlugin DanaRPlugin = (DanaRPlugin) MainApp.getSpecificPlugin(DanaRPlugin.class);
-        DanaRPump danaRPump = DanaRPlugin.getDanaRPump();
+        DanaRPump pump = DanaRPump.getInstance();
         Date now = new Date();
 
         try {
 
             if (DanaRPlugin.isExtendedBoluslInProgress()) {
                 TempBasal extendedBolus = DanaRPlugin.getExtendedBolus();
-                if (danaRPump.isExtendedInProgress) {
-                    if (extendedBolus.absolute != danaRPump.extendedBolusAbsoluteRate) {
+                if (pump.isExtendedInProgress) {
+                    if (extendedBolus.absolute != pump.extendedBolusAbsoluteRate) {
                         // Close current extended
                         extendedBolus.timeEnd = now;
                         MainApp.getDbHelper().getDaoTempBasals().update(extendedBolus);
                         // Create new
                         TempBasal newExtended = new TempBasal();
                         newExtended.timeStart = now;
-                        newExtended.absolute = danaRPump.extendedBolusAbsoluteRate;
+                        newExtended.absolute = pump.extendedBolusAbsoluteRate;
                         newExtended.isAbsolute = true;
-                        newExtended.duration = danaRPump.extendedBolusMinutes;
+                        newExtended.duration = pump.extendedBolusMinutes;
                         newExtended.isExtended = true;
                         MainApp.getDbHelper().getDaoTempBasals().create(newExtended);
                         MainApp.bus().post(new EventTempBasalChange());
@@ -92,13 +93,13 @@ public class MsgStatusBolusExtended extends MessageBase {
                     MainApp.bus().post(new EventTempBasalChange());
                 }
             } else {
-                if (danaRPump.isExtendedInProgress) {
+                if (pump.isExtendedInProgress) {
                     // Create new
                     TempBasal newExtended = new TempBasal();
                     newExtended.timeStart = now;
-                    newExtended.absolute = danaRPump.extendedBolusAbsoluteRate;
+                    newExtended.absolute = pump.extendedBolusAbsoluteRate;
                     newExtended.isAbsolute = true;
-                    newExtended.duration = danaRPump.extendedBolusMinutes;
+                    newExtended.duration = pump.extendedBolusMinutes;
                     newExtended.isExtended = true;
                     MainApp.getDbHelper().getDaoTempBasals().create(newExtended);
                     MainApp.bus().post(new EventTempBasalChange());

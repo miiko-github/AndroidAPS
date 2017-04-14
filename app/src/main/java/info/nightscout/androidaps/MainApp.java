@@ -26,7 +26,11 @@ import info.nightscout.androidaps.plugins.CircadianPercentageProfile.CircadianPe
 import info.nightscout.androidaps.plugins.ConfigBuilder.ConfigBuilderFragment;
 import info.nightscout.androidaps.plugins.ConfigBuilder.ConfigBuilderPlugin;
 import info.nightscout.androidaps.plugins.DanaR.DanaRFragment;
+import info.nightscout.androidaps.plugins.DanaR.services.DanaRExecutionService;
+import info.nightscout.androidaps.plugins.DanaRAPS.DanaRAPSFragment;
+import info.nightscout.androidaps.plugins.DanaRAPS.services.DanaRAPSExecutionService;
 import info.nightscout.androidaps.plugins.DanaRKorean.DanaRKoreanFragment;
+import info.nightscout.androidaps.plugins.DanaRKorean.services.DanaRKoreanExecutionService;
 import info.nightscout.androidaps.plugins.LocalProfile.LocalProfileFragment;
 import info.nightscout.androidaps.plugins.Loop.LoopFragment;
 import info.nightscout.androidaps.plugins.MDI.MDIFragment;
@@ -87,7 +91,8 @@ public class MainApp extends Application {
             pluginsList.add(OverviewFragment.getPlugin());
             if (Config.ACTION) pluginsList.add(ActionsFragment.getPlugin());
             if (Config.DANAR) pluginsList.add(DanaRFragment.getPlugin());
-            if (Config.DANARKOREAN) pluginsList.add(DanaRKoreanFragment.getPlugin());
+            if (Config.DANAR) pluginsList.add(DanaRKoreanFragment.getPlugin());
+            if (Config.DANAR) pluginsList.add(DanaRAPSFragment.getPlugin());
             pluginsList.add(CareportalFragment.getPlugin());
             if (Config.MDI) pluginsList.add(MDIFragment.getPlugin());
             if (Config.VIRTUALPUMP) pluginsList.add(VirtualPumpFragment.getPlugin());
@@ -140,8 +145,9 @@ public class MainApp extends Application {
         if (keepAliveReceiver == null) {
             keepAliveReceiver = new KeepAliveReceiver();
             if (Config.DANAR) {
-                startService(new Intent(this, info.nightscout.androidaps.plugins.DanaR.Services.ExecutionService.class));
-                startService(new Intent(this, info.nightscout.androidaps.plugins.DanaRKorean.Services.ExecutionService.class));
+                startService(new Intent(this, DanaRExecutionService.class));
+                startService(new Intent(this, DanaRKoreanExecutionService.class));
+                startService(new Intent(this, DanaRAPSExecutionService.class));
             }
             keepAliveReceiver.setAlarm(this);
         }
