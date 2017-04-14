@@ -35,7 +35,7 @@ import info.nightscout.androidaps.events.EventPumpStatusChanged;
 import info.nightscout.androidaps.interfaces.PluginBase;
 import info.nightscout.androidaps.plugins.DanaR.DanaRPump;
 import info.nightscout.androidaps.plugins.DanaRAPS.DanaRAPSPlugin;
-import info.nightscout.androidaps.plugins.DanaR.SerialIOThread;
+import info.nightscout.androidaps.plugins.DanaRAPS.SerialIOThread;
 import info.nightscout.androidaps.plugins.DanaR.comm.*;
 import info.nightscout.androidaps.plugins.DanaR.events.EventDanaRBolusStart;
 import info.nightscout.androidaps.plugins.DanaR.events.EventDanaRNewStatus;

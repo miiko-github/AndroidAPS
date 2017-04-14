@@ -45,10 +45,10 @@ public class MsgCheckValue extends MessageBase {
             ToastUtils.showToastInUiThread(MainApp.instance().getApplicationContext(),MainApp.sResources.getString(R.string.wrongpumpdriverselected), R.raw.error);
             ((DanaRAPSPlugin)MainApp.getSpecificPlugin(DanaRKoreanPlugin.class)).doDisconnect("Wrong Model");
             log.debug("Wrong model selected. Switching to non APS DanaR");
-            ((DanaRAPSPlugin)MainApp.getSpecificPlugin(DanaRPlugin.class)).setFragmentEnabled(PluginBase.PUMP, false);
-            ((DanaRAPSPlugin)MainApp.getSpecificPlugin(DanaRPlugin.class)).setFragmentVisible(PluginBase.PUMP, false);
-            ((DanaRPlugin)MainApp.getSpecificPlugin(DanaRPlugin.class)).setFragmentEnabled(PluginBase.PUMP, true);
-            ((DanaRPlugin)MainApp.getSpecificPlugin(DanaRPlugin.class)).setFragmentVisible(PluginBase.PUMP, true);
+            (MainApp.getSpecificPlugin(DanaRAPSPlugin.class)).setFragmentEnabled(PluginBase.PUMP, false);
+            (MainApp.getSpecificPlugin(DanaRAPSPlugin.class)).setFragmentVisible(PluginBase.PUMP, false);
+            (MainApp.getSpecificPlugin(DanaRPlugin.class)).setFragmentEnabled(PluginBase.PUMP, true);
+            (MainApp.getSpecificPlugin(DanaRPlugin.class)).setFragmentVisible(PluginBase.PUMP, true);
 
             //If profile coming from pump, switch it as well
             if(MainApp.getSpecificPlugin(DanaRAPSPlugin.class).isEnabled(PluginBase.PROFILE)){

@@ -15,7 +15,6 @@ import java.util.concurrent.TimeUnit;
 
 import info.nightscout.androidaps.Config;
 import info.nightscout.androidaps.plugins.DanaR.comm.MessageBase;
-import info.nightscout.androidaps.plugins.DanaRAPS.DanaRAPSPlugin;
 import info.nightscout.androidaps.plugins.DanaRAPS.comm.MessageHashTable;
 import info.nightscout.utils.CRC;
 
