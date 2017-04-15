@@ -39,6 +39,9 @@ import info.nightscout.androidaps.plugins.DanaRAPS.SerialIOThread;
 import info.nightscout.androidaps.plugins.DanaR.comm.*;
 import info.nightscout.androidaps.plugins.DanaR.events.EventDanaRBolusStart;
 import info.nightscout.androidaps.plugins.DanaR.events.EventDanaRNewStatus;
+import info.nightscout.androidaps.plugins.DanaRAPS.comm.MsgHistoryEvents;
+import info.nightscout.androidaps.plugins.DanaRAPS.comm.MsgSetAPSTempBasalStart;
+import info.nightscout.androidaps.plugins.DanaRAPS.comm.MsgStatusAPSTempBasal;
 import info.nightscout.androidaps.plugins.NSClientInternal.data.NSProfile;
 import info.nightscout.androidaps.plugins.Overview.Notification;
 import info.nightscout.androidaps.plugins.Overview.events.EventNewNotification;
@@ -297,6 +300,8 @@ public class DanaRAPSExecutionService extends Service {
                 danaRPump.lastSettingsRead = now;
             }
 
+            loadEvents();
+
             danaRPump.lastConnection = now;
             MainApp.bus().post(new EventDanaRNewStatus());
             MainApp.bus().post(new EventInitializationChanged());
@@ -318,6 +323,17 @@ public class DanaRAPSExecutionService extends Service {
         if (!isConnected()) return false;
         MainApp.bus().post(new EventPumpStatusChanged(MainApp.sResources.getString(R.string.settingtempbasal)));
         mSerialIOThread.sendMessage(new MsgSetTempBasalStart(percent, durationInHours));
+        mSerialIOThread.sendMessage(new MsgStatusTempBasal());
+        MainApp.bus().post(new EventPumpStatusChanged(EventPumpStatusChanged.DISCONNECTING));
+        return true;
+    }
+
+    public boolean highTempBasal(int percent) {
+        connect("highTempBasal");
+        if (!isConnected()) return false;
+        MainApp.bus().post(new EventPumpStatusChanged(MainApp.sResources.getString(R.string.settingtempbasal)));
+        mSerialIOThread.sendMessage(new MsgSetAPSTempBasalStart(percent));
+        mSerialIOThread.sendMessage(new MsgStatusAPSTempBasal());
         mSerialIOThread.sendMessage(new MsgStatusTempBasal());
         MainApp.bus().post(new EventPumpStatusChanged(EventPumpStatusChanged.DISCONNECTING));
         return true;
@@ -455,6 +471,17 @@ public class DanaRAPSExecutionService extends Service {
         }
         waitMsec(200);
         mSerialIOThread.sendMessage(new MsgPCCommStop());
+        return true;
+    }
+
+    public boolean loadEvents() {
+        if (!isConnected()) return false;
+        MsgHistoryEvents msg = new MsgHistoryEvents();
+        mSerialIOThread.sendMessage(msg);
+        while (!msg.done && mRfcommSocket.isConnected()) {
+            waitMsec(100);
+        }
+        waitMsec(200);
         return true;
     }
 

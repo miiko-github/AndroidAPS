@@ -452,7 +452,9 @@ public class DanaRAPSPlugin implements PluginBase, PumpInterface, ConstraintsInt
             return result;
         }
         int durationInHours = Math.max(durationInMinutes / 60, 1);
-        boolean connectionOK = sExecutionService.tempBasal(percent, durationInHours);
+        boolean connectionOK = false;
+        if (percent < 100) connectionOK = sExecutionService.tempBasal(percent, durationInHours);
+        else connectionOK =sExecutionService.highTempBasal(percent);
         if (connectionOK && getDanaRPump().isTempBasalInProgress && getDanaRPump().tempBasalPercent == percent) {
             result.enacted = true;
             result.success = true;
